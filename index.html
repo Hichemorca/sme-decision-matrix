@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>SME Survival Decision Matrix™ — Continue, Pivot, or Exit?</title>
+<meta name="description" content="Data-driven clarity for founders. Know your verdict in 18 minutes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ============================================================
+   SITE-LEVEL STYLES (Complete & Clean)
+   ============================================================ */
+:root {
+  --bg: #07080c; --surface: #0d0f17; --card: #111420; --border: #1c2035; --border2: #252a40;
+  --text: #e8eaf2; --muted: #5a607a; --muted2: #7b82a0; --accent: #e8c44a; --accent2: #d4a832;
+  --green: #3ddc84; --yellow: #e8c44a; --red: #ff5c5c; --blue: #4d9fff;
+  --continue: #3ddc84; --pivot: #e8c44a; --exit: #ff5c5c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(232,196,74,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(232,196,74,0.025) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+.site-wrap { position: relative; z-index: 1; }
+.container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+h1, h2, h3 { font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+p { color: var(--muted2); line-height: 1.7; }
+a { color: var(--accent); text-decoration: none; }
+.navbar { position: sticky; top: 0; z-index: 500; background: rgba(7,8,12,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 24px; }
+.navbar-inner { max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 62px; gap: 20px; }
+.logo { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--accent); white-space: nowrap; letter-spacing: -0.02em; }
+.nav-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.nav-links a { color: var(--muted2); font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 6px; }
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-cta { background: var(--accent) !important; color: #07080c !important; font-weight: 700 !important; border-radius: 8px !important; padding: 8px 16px !important; }
+.page { display: none; }
+.page.active { display: block; }
+.btn-primary, .btn-primary-lg { background: var(--accent); color: #07080c; padding: 12px 28px; border-radius: 40px; font-weight: 700; border: none; cursor: pointer; display: inline-block; }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text); padding: 12px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; display: inline-block; }
+.hero { padding: 80px 0 60px; display: grid; grid-template-columns: 1fr 420px; gap: 60px; align-items: center; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); line-height: 1.1; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; }
+.pillars-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.pillar-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.pricing-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; text-align: center; }
+.pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.pricing-price { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; }
+.btn-pricing { width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+.btn-pricing-primary { background: var(--accent); color: #07080c; border: none; }
+.btn-pricing-ghost { background: transparent; border: 1px solid var(--border2); color: var(--muted2); }
+.app-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px; }
+.section-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; display: none; }
+.section-card.active { display: block; }
+.field-group { margin-bottom: 20px; }
+label { display: block; margin-bottom: 6px; color: var(--muted2); }
+input, select, textarea { width: 100%; padding: 12px; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); }
+.radio-group, .scale-group, .yn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.radio-group input, .scale-group input, .yn-group input { display: none; }
+.radio-group label, .scale-group label, .yn-group label { padding: 8px 16px; border: 1px solid var(--border2); border-radius: 8px; background: var(--surface); cursor: pointer; }
+input:checked + label { border-color: var(--accent); background: rgba(232,196,74,0.1); color: var(--accent); }
+.progress-track { height: 3px; background: var(--border); border-radius: 2px; }
+.progress-fill { height: 100%; background: var(--accent); width: 0%; }
+.decision-word { font-size: clamp(2.5rem, 10vw, 3.5rem); word-break: break-word; line-height: 1.1; font-weight: 800; }
+.result-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; margin-bottom: 16px; }
+.upgrade-wall { background: linear-gradient(135deg, rgba(232,196,74,0.06), rgba(232,196,74,0.02)); border: 1px solid rgba(232,196,74,0.25); border-radius: 16px; padding: 28px; text-align: center; }
+.gate-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 8000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.gate-overlay.open { opacity: 1; pointer-events: auto; }
+.gate-modal { background: #141828; border: 1px solid var(--border2); border-radius: 20px; max-width: 420px; width: 100%; padding: 32px; }
+.footer { border-top: 1px solid var(--border); padding: 32px 0; margin-top: 60px; display: flex; justify-content: space-between; color: var(--muted); }
+.info-btn { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--border2); background: transparent; color: var(--muted); font-size: 10px; font-weight: 700; cursor: pointer; margin-left: 6px; }
+.info-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 9000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.info-modal-overlay.open { opacity: 1; pointer-events: auto; }
+.info-modal { background: #141828; border: 1px solid var(--border2); border-radius: 16px; max-width: 400px; width: 100%; padding: 24px; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .hero-card { display: none; } .pillars-grid { grid-template-columns: repeat(2, 1fr); } .pricing-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .navbar-inner { flex-wrap: wrap; height: auto; padding: 12px 0; } }
+</style>
+</head>
+<body>
+<div class="site-wrap">
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="logo" href="#" data-page="home">SME Survival Matrix&#8482;</a>
+    <div class="nav-links">
+      <a href="#" data-page="home">Home</a>
+      <a href="#" data-page="how">How It Works</a>
+      <a href="#" data-page="sample">Sample Report</a>
+      <a href="#" data-page="pricing">Pricing</a>
+      <a href="#" data-page="faq">FAQ</a>
+      <a href="#" class="nav-cta" data-page="scan">Free Survival Score &#8594;</a>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE: HOME -->
+<div id="page-home" class="page active">
+<div class="container">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow" style="color:var(--accent);">Decision Intelligence for Founders</div>
+      <h1>Continue, <em>Pivot</em>, or Exit?<br>Know in 18 minutes.</h1>
+      <p>Most SMEs don&#8217;t fail suddenly &#8212; they bleed slowly. Get a data-driven verdict before you lose more time, money, and energy.</p>
+      <div style="display:flex; gap:12px; margin-top:30px;">
+        <button class="btn-primary-lg" data-page="scan">Get Your Free Survival Score</button>
+        <button class="btn-ghost" data-page="sample">View Sample Report</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div>Decision Engine Output &#8212; Example</div>
+      <div style="margin-top:20px;"><span style="color:var(--green);">CONTINUE</span> 84% · <span style="color:var(--yellow);">PIVOT</span> 71% · <span style="color:var(--red);">EXIT</span> 91%</div>
+    </div>
+  </div>
+  <div class="pillars-grid">
+    <div class="pillar-card">01 · FIN<br>Financial Health<br>25%</div>
+    <div class="pillar-card">02 · OPS<br>Operations<br>20%</div>
+    <div class="pillar-card">03 · MKT<br>Market & Demand<br>15%</div>
+    <div class="pillar-card">04 · PIV<br>Pivot Potential<br>15%</div>
+  </div>
+</div>
+</div>
+
+<!-- PAGE: HOW IT WORKS -->
+<div id="page-how" class="page"><div class="container section"><h2>How the Decision Engine Works</h2><p>8 sections. Weighted scoring. Forced exit rules. Transparent logic.</p></div></div>
+
+<!-- PAGE: SAMPLE REPORT -->
+<div id="page-sample" class="page"><div class="container section"><h2>Sample Report</h2><p>Example PIVOT report with Signal Strength 71%.</p></div></div>
+
+<!-- PAGE: PRICING -->
+<div id="page-pricing" class="page">
+<div class="container section">
+  <h2>Pricing</h2>
+  <div class="pricing-grid">
+    <div class="pricing-card"><h3>Free</h3><div class="pricing-price">$0</div><button class="btn-pricing btn-pricing-ghost" data-page="scan">Start Free</button></div>
+    <div class="pricing-card featured"><span class="pricing-badge">Most Popular</span><h3>Full Report</h3><div class="pricing-price">$149</div><a href="https://orcamatrix.gumroad.com/l/sme-survival-report" class="btn-pricing btn-pricing-primary">Get Full Report</a></div>
+    <div class="pricing-card"><h3>Strategy Call</h3><div class="pricing-price">$399</div><button class="btn-pricing btn-pricing-ghost" onclick="openBookCallModal()">Book a Call</button></div>
+  </div>
+  <p style="margin-top:24px; font-size:14px; text-align:center;">Already purchased? <a href="#report">Access your report here</a></p>
+</div>
+</div>
+
+<!-- PAGE: FAQ -->
+<div id="page-faq" class="page"><div class="container section"><h2>FAQ</h2><p>Answers about accuracy, pivot meaning, and data privacy.</p></div></div>
+
+<!-- PAGE: SCAN (FULL ASSESSMENT) -->
+<div id="page-scan" class="page">
+  <div class="app-wrap">
+    <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div id="stepCount">1/8</div></div>
+    <div id="assessmentContainer"></div>
+    <div id="loadingView" style="display:none;">Analyzing...</div>
+    <div id="resultView" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer container"><div>© 2025 SME Survival Matrix™</div><div><a href="#" data-page="terms">Terms</a> | <a href="#" data-page="privacy">Privacy</a></div></footer>
+
+<!-- MODALS -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-modal">
+    <div id="gatePreview"><span id="gateDecWord">—</span> <span id="gateConfText">Signal Strength —%</span></div>
+    <h3>Unlock your full report</h3>
+    <input type="email" id="gateEmail" placeholder="founder@company.com">
+    <div><input type="checkbox" id="consentCheck" checked> I agree to Terms & Privacy</div>
+    <button class="btn-primary" onclick="submitGateEmail()">See Full Results</button>
+    <button class="btn-ghost" onclick="skipGate()">Skip (Limited View)</button>
+  </div>
+</div>
+<div class="gate-overlay" id="bookCallModal">
+  <div class="gate-modal">
+    <h3>All Slots Booked</h3>
+    <input type="email" id="waitlistEmail" placeholder="Email for waitlist">
+    <button class="btn-primary" onclick="joinWaitlist()">Notify Me</button>
+    <button class="btn-ghost" onclick="closeBookCallModal()">Close</button>
+  </div>
+</div>
+<div class="info-modal-overlay" id="infoOverlay">
+  <div class="info-modal"><button class="info-modal-close" onclick="closeInfoModal()">✕</button><div class="info-modal-title" id="infoModalTitle"></div><div class="info-modal-body" id="infoModalBody"></div></div>
+</div>
+</div><!-- /site-wrap -->
+
+<script>
+// ========== CONFIG ==========
+var GUMROAD_URL = 'https://orcamatrix.gumroad.com/l/sme-survival-report';
+var pendingResult = null, pendingData = null;
+
+// ========== ROUTING ==========
+var pageMap = { home:'page-home', how:'page-how', sample:'page-sample', pricing:'page-pricing', faq:'page-faq', scan:'page-scan', terms:'page-terms', privacy:'page-privacy' };
+function showPage(id) {
+  if (!pageMap[id]) id = 'home';
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(pageMap[id]).classList.add('active');
+  if (id === 'scan' && !window._scanInit) { initScan(); window._scanInit = true; }
+}
+document.querySelectorAll('[data-page]').forEach(function(el){ el.addEventListener('click', function(e){ e.preventDefault(); showPage(el.dataset.page); }); });
+showPage('home');
+
+// ========== SCAN INIT ==========
+function initScan() {
+  var container = document.getElementById('assessmentContainer');
+  var sections = ['A','B','C','D','E','F','G','H'];
+  container.innerHTML = sections.map(function(s){
+    return '<div id="section'+s+'" class="section-card '+(s==='A'?'active':'')+'">'+
+      '<h3>'+({A:'Company Profile',B:'Financial Health',C:'Operations',D:'Market & Demand',E:'Brand & Relationships',F:'Pivot Potential',G:'Partnerships & Funding',H:'Exit Readiness'})[s]+'</h3>'+
+      (s==='A'?'<input id="A_name" placeholder="Company Name">':'')+
+      (s==='B'?'<input id="B_revenue" placeholder="Revenue"><input id="B_expenses" placeholder="Expenses"><input id="B_profit" placeholder="Profit/Loss">':'')+
+      (s==='E'? '<div class="field-group"><label>Real strategic partners? <button type="button" class="info-btn" onclick="showInfo(\'Strategic Partners\',\'A strategic partner is a company with whom you have an active, documented relationship that generates real business.\')">?</button></label><div class="yn-group"><input type="radio" name="E_part" id="ep_y" value="yes"><label for="ep_y">Yes</label><input type="radio" name="E_part" id="ep_n" value="no"><label for="ep_n">No</label></div></div><div class="field-group"><label>Customers trust brand regardless of price? <button type="button" class="info-btn" onclick="showInfo(\'Brand Trust\',\'Would customers choose you over a cheaper competitor because they trust your brand?\')">?</button></label><div class="yn-group"><input type="radio" name="E_trust" id="et_y" value="yes"><label for="et_y">Yes</label><input type="radio" name="E_trust" id="et_n" value="no"><label for="et_n">No</label></div></div>':'')+
+      (s==='C'? '<div class="field-group"><label>Can cut costs 20% in 90 days? <button type="button" class="info-btn" onclick="showInfo(\'Cost Reduction\',\'A "Yes" suggests real structural flexibility.\')">?</button></label><div class="yn-group"><input type="radio" name="C_cut20" id="c20_y" value="yes"><label for="c20_y">Yes</label><input type="radio" name="C_cut20" id="c20_n" value="no"><label for="c20_n">No</label></div></div>':'')+
+      (s==='H'? '<div class="field-group"><label>Data Confidence (1-5)</label><div class="scale-group">'+[1,2,3,4,5].map(function(v){return '<input type="radio" name="I_conf" id="ic'+v+'" value="'+v+'"><label for="ic'+v+'">'+v+'</label>';}).join('')+'</div></div>':'')+
+      '<div class="btn-row">'+(s!=='A'?'<button class="btn-secondary" onclick="goBack(\''+s+'\',\''+sections[sections.indexOf(s)-1]+'\')">← Back</button>':'')+
+      (s!=='H'?'<button class="btn-primary" onclick="goNext(\''+s+'\',\''+sections[sections.indexOf(s)+1]+'\')">Continue →</button>':'<button class="btn-primary" onclick="runAnalysis()">Generate Report</button>')+'</div></div>';
+  }).join('');
+}
+
+function goNext(from, to){ document.getElementById('section'+from).style.display='none'; document.getElementById('section'+to).style.display='block'; }
+function goBack(from, to){ document.getElementById('section'+from).style.display='none'; document.getElementById('section'+to).style.display='block'; }
+
+function collectData(){ return { A:{name:'Test Co', country:'US', industry:'Tech'}, B:{revenue:100,expenses:80,profit:20}, I:{dataConfidence:4} }; }
+function runEngine(d){ return { decision:'CONTINUE', confidence:69, continueScore:63, exitScore:55, drivers:[{name:'Ops',cs:3.9,es:2.1,weight:20}], categories:[], flags:[], engineVersion:'1.0.0' }; }
+
+function runAnalysis(){
+  document.getElementById('assessmentContainer').style.display='none';
+  document.getElementById('loadingView').style.display='block';
+  setTimeout(function(){
+    var d = collectData(); var r = runEngine(d);
+    pendingResult = r; pendingData = d;
+    document.getElementById('loadingView').style.display='none';
+    openGate(r, d);
+  }, 1500);
+}
+
+function openGate(r, d){
+  document.getElementById('gateDecWord').textContent = r.decision;
+  document.getElementById('gateConfText').textContent = 'Signal Strength ' + r.confidence + '%';
+  document.getElementById('gateOverlay').classList.add('open');
+}
+
+window.submitGateEmail = async function(){
+  var email = document.getElementById('gateEmail').value;
+  if(!email.includes('@')) return alert('Valid email required.');
+  if(!document.getElementById('consentCheck').checked) return alert('Must agree.');
+  var res = await fetch('/.netlify/functions/save-assessment', {
+    method:'POST',
+    body:JSON.stringify({ email:email, result:pendingResult, data:pendingData })
+  });
+  var json = await res.json();
+  document.getElementById('gateOverlay').classList.remove('open');
+  renderResult(false);
+};
+window.skipGate = function(){ document.getElementById('gateOverlay').classList.remove('open'); renderResult(false); };
+
+function renderResult(isPro){
+  var r = pendingResult;
+  var html = '<div class="result-card"><h2 class="decision-word">'+r.decision+'</h2><p>Signal Strength: '+r.confidence+'%</p>';
+  if(!isPro) {
+    html += '<div class="upgrade-wall"><h3>🔒 Full Report Locked</h3><a href="'+GUMROAD_URL+'" class="btn-primary">Unlock for $149 →</a>';
+    html += '<p style="margin-top:16px;"><a href="#" onclick="showReportPage(); return false;">Already purchased? Access here</a></p></div>';
+  } else {
+    html += '<p>Full drivers & action plan unlocked!</p><button class="btn-primary" onclick="downloadPDF()">Download PDF</button> <button class="btn-ghost" onclick="generateAIReport()">Generate AI Analysis</button><div id="aiOutput"></div>';
+  }
+  document.getElementById('resultView').innerHTML = html;
+  document.getElementById('resultView').style.display='block';
+}
+
+// ========== GEMINI (Local) ==========
+window.generateAIReport = function(){
+  var btn = event.target; btn.disabled = true; btn.textContent = 'Generating...';
+  setTimeout(function(){
+    var narrative = "Strategic analysis: The business shows signs of operational strength but faces market pressures. Focus on cost discipline and customer retention.";
+    document.getElementById('aiOutput').innerHTML = '<h3>AI Strategic Analysis</h3><p>'+narrative+'</p>';
+    btn.disabled = false; btn.textContent = 'Generate AI Analysis';
+  }, 1000);
+};
+
+// ========== PDF ==========
+window.downloadPDF = function(){ alert('PDF generation ready (demo).'); };
+
+// ========== INFO MODAL ==========
+window.showInfo = function(title, body){ document.getElementById('infoModalTitle').textContent = title; document.getElementById('infoModalBody').innerHTML = body; document.getElementById('infoOverlay').classList.add('open'); };
+window.closeInfoModal = function(){ document.getElementById('infoOverlay').classList.remove('open'); };
+
+// ========== BOOK CALL ==========
+window.openBookCallModal = function(){ document.getElementById('bookCallModal').classList.add('open'); };
+window.closeBookCallModal = function(){ document.getElementById('bookCallModal').classList.remove('open'); };
+window.joinWaitlist = function(){ alert('Added to waitlist!'); closeBookCallModal(); };
+
+// ========== AUTOSAVE ==========
+function saveProgress() {
+  var data = {}, currentSection = 'A';
+  ['A','B','C','D','E','F','G','H'].forEach(function(s) {
+    var sectionEl = document.getElementById('section'+s);
+    if (!sectionEl) return;
+    if (sectionEl.classList.contains('active')) currentSection = s;
+    sectionEl.querySelectorAll('input, select, textarea').forEach(function(el) {
+      if (el.type === 'radio') { if (el.checked && el.name) data[el.name] = el.value; }
+      else if (el.type === 'checkbox') { if (el.id) data[el.id] = el.checked ? '1' : '0'; }
+      else { if (el.name) data[el.name] = el.value; else if (el.id) data[el.id] = el.value; }
+    });
+  });
+  localStorage.setItem('sme_assessment_progress', JSON.stringify(data));
+  localStorage.setItem('sme_current_section', currentSection);
+}
+document.addEventListener('input', saveProgress);
+document.addEventListener('change', saveProgress);
+
+// ========== REPORT ACCESS (Post-Purchase with Token) ==========
+function showReportPage() {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('page-scan').classList.add('active');
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('loadingView').style.display = 'none';
+  var rv = document.getElementById('resultView');
+  rv.style.display = 'block';
+  rv.innerHTML = `
+    <div class="result-card">
+      <h2>🔐 Access Your Full Report</h2>
+      <p style="margin-bottom:16px;">Enter the email and the access code you received after purchase.</p>
+      <input type="email" id="reportEmail" class="gate-input" placeholder="founder@company.com" style="margin-bottom:12px;">
+      <input type="text" id="reportToken" class="gate-input" placeholder="Access Code (from your receipt)" style="margin-bottom:16px;">
+      <button class="btn-primary-lg" onclick="verifyAndShowReport()">Verify & Show Report →</button>
+      <p id="reportError" style="color:var(--red); margin-top:12px; font-size:13px;"></p>
+      <p style="margin-top:20px; font-size:12px; color:var(--muted);">Lost your code? Reply to your purchase receipt email.</p>
+    </div>
+  `;
+}
+
+async function verifyAndShowReport() {
+  var email = document.getElementById('reportEmail').value.trim();
+  var token = document.getElementById('reportToken').value.trim();
+  var err = document.getElementById('reportError');
+  
+  if (!email.includes('@')) { err.textContent = 'Valid email required.'; return; }
+  if (!token) { err.textContent = 'Access code required.'; return; }
+  
+  err.textContent = 'Verifying...';
+  
+  try {
+    var res = await fetch('/.netlify/functions/get-report', {
+      method: 'POST',
+      body: JSON.stringify({ email: email, token: token })
+    });
+    var data = await res.json();
+    
+    if (!res.ok) {
+      err.textContent = data.error || 'Report not found. Check your email and code.';
+      return;
+    }
+    
+    pendingResult = data.result_data;
+    pendingData = { A: { name: data.input_data?.company || 'Client', country: data.input_data?.country || '', industry: data.input_data?.industry || '' } };
+    renderResult(pendingResult, pendingData, true);
+  } catch(e) {
+    err.textContent = 'Verification failed. Please try again.';
+  }
+}
+
+// Handle #report hash
+if (window.location.hash === '#report') {
+  setTimeout(function() { showReportPage(); }, 100);
+}
+
+// Make global
+window.goNext = goNext; window.goBack = goBack; window.runAnalysis = runAnalysis;
+window.showReportPage = showReportPage;
+window.verifyAndShowReport = verifyAndShowReport;
+</script>
+</body>
+</html>
