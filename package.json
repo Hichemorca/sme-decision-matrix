@@ -1,0 +1,22 @@
+{
+  "name": "sme-survival-matrix",
+  "version": "1.0.0",
+  "description": "SME Survival Decision Matrix - Decision intelligence for founders",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "resend": "^4.0.0"
+  },
+  "keywords": [
+    "sme",
+    "business",
+    "decision",
+    "matrix",
+    "survival"
+  ],
+  "author": "SME Survival Matrix",
+  "license": "ISC"
+}
