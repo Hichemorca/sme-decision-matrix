@@ -1,9 +1,0 @@
-{
-  "name": "sme-functions",
-  "version": "1.0.0",
-  "description": "Netlify Functions for SME Survival Decision Matrix",
-  "dependencies": {
-    "resend": "^4.0.0",
-    "@supabase/supabase-js": "^2.39.0"
-  }
-}
