@@ -816,7 +816,7 @@ async function submitGateEmail(){
   if(sbClient && pendingResult){ try { await sbClient.from('assessments').insert({ email:email, decision:pendingResult.decision, confidence:pendingResult.confidence, result_data:Object.assign({}, pendingResult, { engineVersion:'1.0.0' }), input_data:{ company:pendingData.A?.name, industry:pendingData.A?.industry, country:pendingData.A?.country, stage:pendingData.A?.stage, revenue:pendingData.B?.revenue, expenses:pendingData.B?.expenses, profit:pendingData.B?.profit } }); } catch(err){ console.warn(err); } }
   closeGate(); renderResult(pendingResult, pendingData, false);
 }
-function skipGate(){ closeGate(); renderResult(pendingResult, pendingData, false); }
+function skipGate(){ closeGate(); renderResult(pendingResult, pendingData, true); }
 
 // ========== BOOK CALL ==========
 function openBookCallModal(){ document.getElementById('bookCallModal').classList.add('open'); document.body.style.overflow = 'hidden'; }
@@ -1014,7 +1014,8 @@ function renderResult(result, d, isPro){
 
 // ========== RUN ANALYSIS ==========
 function runAnalysis(){
-  sections.forEach(function(s){ document.getElementById('section'+s).style.display='none'; });
+  sections.forEach(function(s){ document.getElementById('section'+s).classList.remove('active');
+  });
   document.getElementById('progressWrap').style.display='none';
   document.getElementById('loadingView').style.display='block';
   var msgs = ['Parsing financial signals...','Running inconsistency detection...','Calculating weighted scores...','Applying decision rules...','Computing signal strength...','Generating action plan...','Finalizing report...'];
@@ -1115,7 +1116,7 @@ function saveProgress() {
   });
   localStorage.setItem('sme_assessment_progress', JSON.stringify(data));
   localStorage.setItem('sme_current_section', currentSection);
-
+}
 function restoreProgress() {
   var raw = localStorage.getItem('sme_assessment_progress');
   if (!raw) return;
